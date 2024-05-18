@@ -1,0 +1,187 @@
+unit fm_Calc;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.StdCtrls, Vcl.Mask,
+  Vcl.ComCtrls, ExpressionEvaluator;
+
+type
+  TfmCalc = class(TForm)
+    sbPlus: TSpeedButton;
+    sbMinus: TSpeedButton;
+    sbMultiply: TSpeedButton;
+    sbDivide: TSpeedButton;
+    sbCancel: TSpeedButton;
+    sbOne: TSpeedButton;
+    sbTwo: TSpeedButton;
+    sbThree: TSpeedButton;
+    sbFour: TSpeedButton;
+    sbFive: TSpeedButton;
+    sbSix: TSpeedButton;
+    sbSeven: TSpeedButton;
+    sbEight: TSpeedButton;
+    sbNine: TSpeedButton;
+    sbZero: TSpeedButton;
+    sbEnter: TSpeedButton;
+    rtResult: TRichEdit;
+    procedure sbEnterClick(Sender: TObject);
+    procedure sbCancelClick(Sender: TObject);
+    procedure rtResultKeyPress(Sender: TObject; var Key: Char);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure sbOneClick(Sender: TObject);
+    procedure sbTwoClick(Sender: TObject);
+    procedure sbThreeClick(Sender: TObject);
+    procedure sbFourClick(Sender: TObject);
+    procedure sbFiveClick(Sender: TObject);
+    procedure sbSixClick(Sender: TObject);
+    procedure sbSevenClick(Sender: TObject);
+    procedure sbEightClick(Sender: TObject);
+    procedure sbNineClick(Sender: TObject);
+    procedure sbZeroClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure HighlightDigitsInRichEdit(Value: string);
+  public
+    { Public declarations }
+  end;
+const
+  NL = #13#10; //NewLine
+var
+  fmCalc: TfmCalc;
+  Eval: TExpressionEvaluator;
+
+implementation
+
+{$R *.dfm}
+
+procedure TfmCalc.rtResultKeyPress(Sender: TObject; var Key: Char);
+begin
+    Case key of
+      #27: sbCancelClick(sbCancel);
+      #13: sbEnterClick(sbEnter);
+    End;
+
+    if not CharInSet(key, ['0'..'9', {'.', ',',}'(',')','[',']','}','{','*','/','-','+']) then
+      Key := #0;
+end;
+
+procedure TfmCalc.FormCreate(Sender: TObject);
+begin
+  Eval := TExpressionEvaluator.Create;
+end;
+
+procedure TfmCalc.FormDestroy(Sender: TObject);
+begin
+  Eval := nil;
+end;
+
+procedure TfmCalc.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+    Case key of
+      #27: sbCancelClick(sbCancel);
+      #13: sbEnterClick(sbEnter);
+    End;
+end;
+
+procedure TfmCalc.sbCancelClick(Sender: TObject);
+begin
+  rtResult.Clear;
+end;
+
+procedure TfmCalc.sbEightClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '8';
+end;
+
+procedure TfmCalc.sbEnterClick(Sender: TObject);
+var
+  Expression: string;
+  Result: Integer;
+begin
+try
+  Expression := StringReplace(rtResult.Text, ' ', '', [rfReplaceAll]);
+  Expression := StringReplace(Expression, NL, '', [rfReplaceAll]);
+
+  Result := TExpressionEvaluator.Evaluate(Expression);
+  HighlightDigitsInRichEdit(IntToStr(Result));
+except
+  on E: Exception do
+    begin
+      MessageDlg(e.Message, mtError, [tMsgDlgBtn.mbOK], 0);
+      rtResult.Clear;
+    end;
+  end;
+end;
+
+procedure TfmCalc.sbFiveClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '5';
+end;
+
+procedure TfmCalc.sbFourClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '4';
+end;
+
+procedure TfmCalc.sbNineClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '9';
+end;
+
+procedure TfmCalc.sbOneClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '1';
+end;
+
+procedure TfmCalc.sbSevenClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '7';
+end;
+
+procedure TfmCalc.sbSixClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '6';
+end;
+
+procedure TfmCalc.sbThreeClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '3';
+end;
+
+procedure TfmCalc.sbTwoClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '2';
+end;
+
+procedure TfmCalc.sbZeroClick(Sender: TObject);
+begin
+  rtResult.Text := rtResult.Text + '0';
+end;
+
+procedure TfmCalc.HighlightDigitsInRichEdit(Value: string);
+var
+  i: Integer;
+
+begin
+  var CurrentColor: TColor := clGreen;
+  rtResult.Clear;
+  for i := 1 to Length(Value) do
+  begin
+    if (i mod 3 = 0) then
+    begin
+      if CurrentColor = clGreen then
+        CurrentColor := clred
+      else
+        CurrentColor := clGreen;
+    end;
+
+    rtResult.SelAttributes.Color := CurrentColor;
+    rtResult.SelText := Value[i];
+  end;
+end;
+
+end.

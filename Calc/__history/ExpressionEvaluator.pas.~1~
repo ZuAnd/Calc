@@ -1,0 +1,134 @@
+unit ExpressionEvaluator;
+
+interface
+
+uses
+  System.SysUtils, System.Math;
+
+type
+  TExpressionEvaluator = class
+  private
+    class function IsDigit(C: Char): Boolean; static;
+    class function IsOperator(C: Char): Boolean; static;
+    class function Priority(C: Char): Integer; static;
+    class function ApplyOperator(Operator: Char; Operand1, Operand2: Integer): Integer; static;
+    class function EvaluateExpression(const Expression: string): Integer; static;
+    class function ExtractNumber(var Expression: string): Integer; static;
+  public
+    class function Evaluate(const Expression: string): Integer; static;
+  end;
+
+implementation
+
+{ TExpressionEvaluator }
+
+class function TExpressionEvaluator.IsDigit(C: Char): Boolean;
+begin
+  Result := (C >= '0') and (C <= '9');
+end;
+
+class function TExpressionEvaluator.IsOperator(C: Char): Boolean;
+begin
+  Result := (C = '+') or (C = '-') or (C = '*') or (C = '/');
+end;
+
+class function TExpressionEvaluator.Priority(C: Char): Integer;
+begin
+  case C of
+    '+', '-': Result := 1;
+    '*', '/': Result := 2;
+    else Result := 0;
+  end;
+end;
+
+class function TExpressionEvaluator.ApplyOperator(Operator: Char; Operand1, Operand2: Integer): Integer;
+begin
+  case Operator of
+    '+': Result := Operand1 + Operand2;
+    '-': Result := Operand1 - Operand2;
+    '*': Result := Operand1 * Operand2;
+    '/': Result := Operand1 div Operand2; // Integer division
+  end;
+end;
+
+class function TExpressionEvaluator.EvaluateExpression(const Expression: string): Integer;
+var
+  StackOperands: TArray<Integer>;
+  StackOperators: TArray<Char>;
+  Token: string;
+  OperatorIndex, Operand1, Operand2: Integer;
+begin
+  SetLength(StackOperands, 0);
+  SetLength(StackOperators, 0);
+
+  Token := '';
+  for OperatorIndex := 1 to Length(Expression) do
+  begin
+    if IsDigit(Expression[OperatorIndex]) then
+      Token := Token + Expression[OperatorIndex]
+    else if IsOperator(Expression[OperatorIndex]) then
+    begin
+      if Token <> '' then
+      begin
+        SetLength(StackOperands, Length(StackOperands) + 1);
+        StackOperands[High(StackOperands)] := StrToInt(Token);
+        Token := '';
+      end;
+
+      while (Length(StackOperators) > 0) and (Priority(StackOperators[High(StackOperators)]) >= Priority(Expression[OperatorIndex])) do
+      begin
+        Operand2 := StackOperands[High(StackOperands)];
+        SetLength(StackOperands, Length(StackOperands) - 1);
+
+        Operand1 := StackOperands[High(StackOperands)];
+        SetLength(StackOperands, Length(StackOperands) - 1);
+
+        StackOperands := StackOperands + [ApplyOperator(StackOperators[High(StackOperators)], Operand1, Operand2)];
+        SetLength(StackOperators, Length(StackOperators) - 1);
+      end;
+
+      SetLength(StackOperators, Length(StackOperators) + 1);
+      StackOperators[High(StackOperators)] := Expression[OperatorIndex];
+    end;
+  end;
+
+  if Token <> '' then
+  begin
+    SetLength(StackOperands, Length(StackOperands) + 1);
+    StackOperands[High(StackOperands)] := StrToInt(Token);
+  end;
+
+  while Length(StackOperators) > 0 do
+  begin
+    Operand2 := StackOperands[High(StackOperands)];
+    SetLength(StackOperands, Length(StackOperands) - 1);
+
+    Operand1 := StackOperands[High(StackOperands)];
+    SetLength(StackOperands, Length(StackOperands) - 1);
+
+    StackOperands := StackOperands + [ApplyOperator(StackOperators[High(StackOperators)], Operand1, Operand2)];
+    SetLength(StackOperators, Length(StackOperators) - 1);
+  end;
+
+  Result := StackOperands[0];
+end;
+
+class function TExpressionEvaluator.ExtractNumber(var Expression: string): Integer;
+var
+  NumberStr: string;
+begin
+  NumberStr := '';
+  while (Length(Expression) > 0) and IsDigit(Expression[1]) do
+  begin
+    NumberStr := NumberStr + Expression[1];
+    Delete(Expression, 1, 1);
+  end;
+  Result := StrToInt(NumberStr);
+end;
+
+class function TExpressionEvaluator.Evaluate(const Expression: string): Integer;
+begin
+  Result := EvaluateExpression(Expression);
+end;
+
+end.
