@@ -145,14 +145,14 @@ end;
 procedure TfmCalc.sbEnterClick(Sender: TObject);
 var
   Expression: string;
-  Result: Integer;
+  Result: Real;
 begin
 try
   Expression := StringReplace(rtResult.Text, ' ', '', [rfReplaceAll]);
   Expression := StringReplace(Expression, NL, '', [rfReplaceAll]);
 
   Result := TExpressionEvaluator.Evaluate(Expression);
-  HighlightDigitsInRichEdit(IntToStr(Result));
+  HighlightDigitsInRichEdit(FloatToStr(Result));
 except
   on E: Exception do
     begin
@@ -225,42 +225,98 @@ end;
 procedure TfmCalc.HighlightDigitsInRichEdit(Value: string);
 var
   i: Integer;
+  integerPart, fractionalPart: string;
+  decimalPos: Integer;
 begin
    var CurrentColor: TColor := clGreen;
   rtResult.Clear;
-  if Length(Value) > 4 then
+
+
+  if (Pos('.', Value) <> 0) then
+    decimalPos := Pos('.', Value);
+
+  if (Pos(',', Value) <> 0) then
+    decimalPos := Pos(',', Value);
+  if decimalPos <> 0 then
   begin
-    for i := 1 to Length(Value) do
-    begin
-      if (i mod 3 = 0) then
+    integerPart := Copy(Value, 1, decimalPos - 1);
+    fractionalPart := Copy(Value, decimalPos + 1, Length(Value) - decimalPos);
+
+    if Length(integerPart) > 4 then
       begin
-        if CurrentColor = clGreen then
-          CurrentColor := clred
-          else
-            CurrentColor := clGreen;
-      end;
-      rtResult.SelAttributes.Color := CurrentColor;
-      rtResult.SelText := Value[i];
-    end;
-  end else if Length(Value) = 4 then
-  begin
+        for i := 1 to Length(integerPart) do
+        begin
+          if (i mod 3 = 0) then
+          begin
+            if CurrentColor = clGreen then
+              CurrentColor := clred
+              else
+                CurrentColor := clGreen;
+          end;
+          rtResult.SelAttributes.Color := CurrentColor;
+          rtResult.SelText := integerPart[i];
+        end;
+      end else if Length(integerPart) = 4 then
+      begin
 
-    for i := 1 to 4 do
-    begin
-      if (i = 1) then
-        CurrentColor := clred
+        for i := 1 to 4 do
+        begin
+          if (i = 1) then
+            CurrentColor := clred
+            else
+                CurrentColor := clGreen;
+
+          rtResult.SelAttributes.Color := CurrentColor;
+          rtResult.SelText := integerPart[i];
+        end;
+
+      end
         else
-            CurrentColor := clGreen;
+        begin
+          rtResult.SelAttributes.Color := clGreen;
+          rtResult.SelText := integerPart;
+        end;
 
-      rtResult.SelAttributes.Color := CurrentColor;
-      rtResult.SelText := Value[i];
-    end;
-
+    rtResult.SelAttributes.Color := clyellow;
+    rtResult.SelText := ','+fractionalPart;
   end
     else
     begin
-      rtResult.SelAttributes.Color := clGreen;
-      rtResult.SelText := Value;
+
+      if Length(Value) > 4 then
+      begin
+        for i := 1 to Length(Value) do
+        begin
+          if (i mod 3 = 0) then
+          begin
+            if CurrentColor = clGreen then
+              CurrentColor := clred
+              else
+                CurrentColor := clGreen;
+          end;
+          rtResult.SelAttributes.Color := CurrentColor;
+          rtResult.SelText := Value[i];
+        end;
+      end else if Length(Value) = 4 then
+      begin
+
+        for i := 1 to 4 do
+        begin
+          if (i = 1) then
+            CurrentColor := clred
+            else
+                CurrentColor := clGreen;
+
+          rtResult.SelAttributes.Color := CurrentColor;
+          rtResult.SelText := Value[i];
+        end;
+
+      end
+        else
+        begin
+          rtResult.SelAttributes.Color := clGreen;
+          rtResult.SelText := Value;
+        end;
     end;
 
 end;

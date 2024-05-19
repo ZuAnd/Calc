@@ -11,9 +11,9 @@ type
     class function IsDigit(ch: Char): Boolean;
     class function IsOperator(ch: Char): Boolean;
     class function Priority(ch: Char): Integer;
-    class function ApplyOperator(op: Char; operand1, operand2: Integer): Integer;
+    class function ApplyOperator(op: Char; operand1, operand2: Integer): Real;
   public
-    class function Evaluate(const expression: string): Integer;
+    class function Evaluate(const expression: string): Real;
   end;
 
 implementation
@@ -40,17 +40,17 @@ begin
   end;
 end;
 
-class function TExpressionEvaluator.ApplyOperator(op: Char; operand1, operand2: Integer): Integer;
+class function TExpressionEvaluator.ApplyOperator(op: Char; operand1, operand2: Integer): Real;
 begin
   case op of
     '+': Result := operand1 + operand2;
     '-': Result := operand1 - operand2;
     '*': Result := operand1 * operand2;
-    '/': Result := operand1 div operand2; // Integer division
+    '/': Result := operand1 / operand2; // Integer division
   end;
 end;
 
-class function TExpressionEvaluator.Evaluate(const expression: string): Integer;
+class function TExpressionEvaluator.Evaluate(const expression: string): Real;
 var
   stackOperands: TStringList;
   stackOperators: TStringList;
@@ -75,13 +75,13 @@ begin
           Result := Result * 10 + StrToInt(expression[i]);
           Inc(i);
         end;
-        stackOperands.Add(IntToStr(Result));
+        stackOperands.Add(FloatToStr(Result));
       end
       else if IsOperator(ch) then
       begin
         while (stackOperators.Count > 0) and (Priority(stackOperators[stackOperators.Count - 1][1]) >= Priority(ch)) do
         begin
-          stackOperands.Add(IntToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
+          stackOperands.Add(FloatToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
             StrToInt(stackOperands[stackOperands.Count - 2]),
             StrToInt(stackOperands[stackOperands.Count - 1]))));
           stackOperands.Delete(stackOperands.Count - 2);
@@ -114,7 +114,7 @@ begin
           (stackOperators[stackOperators.Count - 1][1] <> '{') and (stackOperators[stackOperators.Count - 1][1] <> '[') do
         begin
 
-          stackOperands.Add(IntToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
+          stackOperands.Add(FloatToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
             StrToInt(stackOperands[stackOperands.Count - 2]),
             StrToInt(stackOperands[stackOperands.Count - 1]))));
           stackOperands.Delete(stackOperands.Count - 2);
@@ -138,7 +138,7 @@ begin
       if (stackOperators[stackOperators.Count - 1][1] = '(') or (stackOperators[stackOperators.Count - 1][1] = '{') or
         (stackOperators[stackOperators.Count - 1][1] = '[') then
         raise Exception.Create('Invalid expression: Unmatched opening bracket');
-      stackOperands.Add(IntToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
+      stackOperands.Add(FloatToStr(ApplyOperator(stackOperators[stackOperators.Count - 1][1],
         StrToInt(stackOperands[stackOperands.Count - 2]),
         StrToInt(stackOperands[stackOperands.Count - 1]))));
       stackOperands.Delete(stackOperands.Count - 2);
@@ -149,7 +149,7 @@ begin
     if stackOperands.Count <> 1 then
       raise Exception.Create('Invalid expression');
 
-    Result := StrToInt(stackOperands[0]);
+    Result := StrToFloat(stackOperands[0]);
   finally
     stackOperands.Free;
     stackOperators.Free;

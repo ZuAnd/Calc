@@ -2,12 +2,12 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>1899.12.30 00:00:00.000.823,=C:\Users\User\Desktop\Calc\ModelSupport_CalcProj\default.txaPackage</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.811,C:\Users\User\Desktop\Calc\Calc.pas=C:\Users\User\Desktop\Calc\fm_Calc.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\Users\User\Desktop\Calc\Calc.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\User\Desktop\Calc\Calc.pas=C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.811,C:\Users\User\Desktop\Calc\fm_Calc.pas=C:\Users\User\Desktop\Calc\Calc.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.073,=C:\Users\User\Desktop\Calc\ExpressionEvaluator.pas</Transaction>
     <Transaction>1899.12.30 00:00:00.000.726,=C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\User\Desktop\Calc\Calc.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.213,C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\User\Desktop\Calc\CalcProj.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.811,C:\Users\User\Desktop\Calc\Calc.dfm=C:\Users\User\Desktop\Calc\fm_Calc.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\User\Desktop\Calc\Calc.dfm=C:\Users\User\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.213,C:\Users\User\Desktop\Calc\CalcProj.dproj=C:\Users\User\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.811,C:\Users\User\Desktop\Calc\fm_Calc.dfm=C:\Users\User\Desktop\Calc\Calc.dfm</Transaction>
   </Transactions>
 </BorlandProject>
